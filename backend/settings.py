@@ -31,12 +31,25 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
+
+    # Admin UI
+    'jazzmin',
+
+    # Default Apps
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    
+    # Apps
+    'analyser',
+
+    # Rest Framework
+    'rest_framework',
+
+
 ]
 
 MIDDLEWARE = [
@@ -121,3 +134,9 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# Admin UI
+JAZZMIN_SETTINGS = {
+    "copyright": "Mumin Bhat",
+    "show_ui_builder": False,
+}

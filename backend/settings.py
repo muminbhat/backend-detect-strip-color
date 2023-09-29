@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 """
 
 from pathlib import Path
+import os
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -25,7 +26,7 @@ SECRET_KEY = 'django-insecure-^n%yo&i!v)vo-pp!q%t$joh-nhw*bt33x2e*yw(8$eljt**%!p
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
@@ -34,6 +35,9 @@ INSTALLED_APPS = [
 
     # Admin UI
     'jazzmin',
+
+    # Communication
+    "corsheaders",
 
     # Default Apps
     'django.contrib.admin',
@@ -50,9 +54,11 @@ INSTALLED_APPS = [
     'rest_framework',
 
 
+
 ]
 
 MIDDLEWARE = [
+    "corsheaders.middleware.CorsMiddleware",
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -140,3 +146,19 @@ JAZZMIN_SETTINGS = {
     "copyright": "Mumin Bhat",
     "show_ui_builder": False,
 }
+
+# Media
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media/') # 'data' is my media folder
+MEDIA_URL = '/media/'
+
+# Communication
+CORS_ALLOW_ALL_ORIGINS: True
+
+CORS_ALLOW_METHODS = (
+    "DELETE",
+    "GET",
+    "OPTIONS",
+    "PATCH",
+    "POST",
+    "PUT",
+)

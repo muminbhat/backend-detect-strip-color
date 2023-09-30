@@ -166,6 +166,15 @@ CORS_ALLOW_METHODS = (
     "PUT",
 )
 
+CORS_ALLOW_HEADERS = (
+    "accept",
+    "authorization",
+    "content-type",
+    "user-agent",
+    "x-csrftoken",
+    "x-requested-with",
+)
+
 from corsheaders.defaults import default_headers
 
 CORS_ALLOW_HEADERS = default_headers + (

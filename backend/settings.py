@@ -49,6 +49,7 @@ INSTALLED_APPS = [
     
     # Apps
     'analyser',
+    'newsletter',
 
     # Rest Framework
     'rest_framework',

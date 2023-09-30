@@ -24,7 +24,8 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     
     # App Urls
-    path('api/analyser/', include('analyser.urls'))
+    path('api/analyser/', include('analyser.urls')),
+    path('api/newsletter/', include('newsletter.urls'))
 ]
 
 urlpatterns += static(settings.MEDIA_URL, document_root = settings.MEDIA_ROOT)

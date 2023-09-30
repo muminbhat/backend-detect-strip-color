@@ -93,13 +93,11 @@ WSGI_APPLICATION = 'backend.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-    }
-}
+import dj_database_url
 
+DATABASES = {
+'default': dj_database_url.config(default=('postgresql://postgres:VIcrcYBn1aMZydZdX5pm@containers-us-west-164.railway.app:6701/railway'))
+    }
 
 # Password validation
 # https://docs.djangoproject.com/en/4.2/ref/settings/#auth-password-validators
@@ -154,6 +152,7 @@ MEDIA_URL = '/media/'
 
 # Communication
 CORS_ALLOW_ALL_ORIGINS: True
+CORS_ALLOW_CREDENTIALS = True
 
 CORS_ALLOW_METHODS = (
     "DELETE",
@@ -162,4 +161,10 @@ CORS_ALLOW_METHODS = (
     "PATCH",
     "POST",
     "PUT",
+)
+
+from corsheaders.defaults import default_headers
+
+CORS_ALLOW_HEADERS = default_headers + (
+    'Access-Control-Allow-Origin',
 )

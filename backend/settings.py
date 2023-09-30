@@ -154,8 +154,8 @@ MEDIA_URL = '/media/'
 CORS_ALLOWED_ORIGINS = [
     "https://backend-stripu.onrender.com",
     "https://stripu.vercel.app/"
-    "localhost:3000"
-    "http://127.0.0.1:3000"
+    "localhost:3000/"
+    "http://127.0.0.1/"
 ]
 CORS_ALLOW_CREDENTIALS = True
 

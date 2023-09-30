@@ -151,7 +151,10 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media/') # 'data' is my media folder
 MEDIA_URL = '/media/'
 
 # Communication
-CORS_ALLOW_ALL_ORIGINS: True
+CORS_ALLOWED_ORIGINS = [
+    "https://backend-stripu.onrender.com",
+    "https://stripu.vercel.app/"
+]
 CORS_ALLOW_CREDENTIALS = True
 
 CORS_ALLOW_METHODS = (

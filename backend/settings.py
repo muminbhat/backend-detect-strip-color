@@ -164,7 +164,6 @@ MEDIA_URL = '/media/'
 # ]
 
 CORS_ALLOW_ALL_ORIGINS = True
-CORS_ALLOW_CREDENTIALS = True
 
 CORS_ALLOW_METHODS = (
     "DELETE",
@@ -174,17 +173,6 @@ CORS_ALLOW_METHODS = (
     "POST",
     "PUT",
 )
-
-CORS_ALLOW_HEADERS = (
-    "accept",
-    "authorization",
-    "content-type",
-    "user-agent",
-    "x-csrftoken",
-    "x-requested-with",
-    "Access-Control-Allow-Origin",
-)
-
 
 CORS_ALLOW_HEADERS = default_headers + (
     'Access-Control-Allow-Origin',

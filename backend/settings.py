@@ -154,7 +154,9 @@ MEDIA_URL = '/media/'
 # Communication
 CORS_ALLOWED_ORIGINS = [
     "https://backend-stripu.onrender.com",
-    "https://stripu.vercel.app"
+    "https://stripu.vercel.app",
+    "http://127.0.0.1:8000",
+    "http://localhost:8000"
 ]
 CORS_ALLOW_CREDENTIALS = True
 
@@ -181,3 +183,19 @@ from corsheaders.defaults import default_headers
 CORS_ALLOW_HEADERS = default_headers + (
     'Access-Control-Allow-Origin',
 )
+
+
+# Object Delivery
+import cloudinary
+import cloudinary.uploader
+import cloudinary.api
+
+
+# Config Cloudinary         
+cloudinary.config( 
+  cloud_name = "dxlzb8s4y", 
+  api_key = "294815647831565", 
+  api_secret = "qID8z6MUQNuUinZ39t-lqW_P1QM" 
+)
+
+DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'

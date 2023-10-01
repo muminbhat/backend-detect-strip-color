@@ -9,6 +9,11 @@ from .models import Sample
 from rest_framework import status
 from rest_framework.decorators import api_view, parser_classes
 from rest_framework.parsers import MultiPartParser, FormParser
+import cloudinary
+import cloudinary.uploader
+import cloudinary.api
+from django.core.exceptions import SuspiciousFileOperation
+import requests
 
 
 # List all samples
@@ -24,9 +29,13 @@ def sample_list(request):
 @parser_classes((MultiPartParser, FormParser))
 def create_sample(request):
     serializer = SampleSerializer(data=request.data)
+    
 
     if serializer.is_valid():
-        serializer.save()
+        uploaded_image = cloudinary.uploader.upload(request.FILES['sample_image'])
+        cloudinary_url = uploaded_image['url']
+        sample = serializer.save(sample_image=cloudinary_url)
+        sample.save()
         return Response(serializer.data, status=status.HTTP_201_CREATED)
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST,)
 
@@ -42,17 +51,44 @@ def sample_detail(request, sample_id):
         return Response(serializer.data)
 
     elif request.method == 'POST':
-        analysis_results = process_image(sample.sample_image)  # Replace with your image processing logic
-        sample.analysis_results = analysis_results
-        sample.save()
-        serializer = SampleSerializer(sample)
-        return Response(serializer.data)
+        try:
+            # Process the uploaded image
+            analyzed_colors = process_image(sample.sample_image)
+
+            # Ensure that the response contains exactly 10 colors
+            if len(analyzed_colors) != 10:
+                return Response({'error': 'Image does not contain 10 distinct colors'}, status=status.HTTP_400_BAD_REQUEST)
+
+            # Store the Cloudinary image URL in the sample
+            sample.sample_image = cloudinary_resource.url
+
+            # Save the sample
+            sample.save()
+
+            # Update the analysis results
+            sample.analysis_results = analyzed_colors
+            sample.save()
+
+            serializer = SampleSerializer(sample)
+            return Response(serializer.data)
+
+        except SuspiciousFileOperation:
+            return Response({'error': 'Invalid file operation'}, status=status.HTTP_400_BAD_REQUEST)
+        except Exception as e:
+            return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
+
+import requests  # Make sure you import the requests library at the beginning of your Python file
 
 # Image Process
-def process_image(sample_image):
+def process_image(image_url):
     try:
-        # Read the uploaded image using OpenCV
-        img = cv2.imdecode(np.fromstring(sample_image.read(), np.uint8), cv2.IMREAD_COLOR)
+        # Read the image from the URL
+        response = requests.get(image_url)
+        response.raise_for_status()
+        image_data = response.content
+
+        # Read the image using OpenCV
+        img = cv2.imdecode(np.fromstring(image_data, np.uint8), cv2.IMREAD_COLOR)
 
         # Convert the image to RGB (if it's in BGR format)
         img_rgb = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
@@ -82,13 +118,19 @@ def analyze_strip(request, sample_id):
     try:
         # Get the sample from the database
         sample = Sample.objects.get(pk=sample_id)
-
-        # Process the uploaded image
-        analyzed_colors = process_image(sample.sample_image)
+        cloudinary_resource = sample.sample_image
+        # Fetch the Cloudinary URL of the uploaded image
+        cloudinary_url = cloudinary_resource.url
+        # Process the Cloudinary image URL
+        analyzed_colors = process_image(cloudinary_url)
 
         # Ensure that the response contains exactly 10 colors
         if len(analyzed_colors) != 10:
             return Response({'error': 'Image does not contain 10 distinct colors'}, status=status.HTTP_400_BAD_REQUEST)
+        
+        # Save the analyzed colors in the sample's analysis_results field
+        sample.analysis_results = analyzed_colors
+        sample.save()
 
         # Prepare the JSON response
         response_data = {
@@ -100,3 +142,4 @@ def analyze_strip(request, sample_id):
         return Response({'error': 'Sample not found'}, status=status.HTTP_404_NOT_FOUND)
     except Exception as e:
         return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
+

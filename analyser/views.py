@@ -31,12 +31,15 @@ def create_sample(request):
     serializer = SampleSerializer(data=request.data)
 
     if serializer.is_valid():
-        # Save the sample data to the database
-        serializer.save()
+        # Upload the image to Cloudinary
+        uploaded_image = cloudinary.uploader.upload(request.FILES['sample_image'])
+        cloudinary_url = uploaded_image['url']
+
+        # Save the sample data to the database with the Cloudinary URL
+        sample = serializer.save(sample_image=cloudinary_url)
 
         # Perform image analysis on the saved sample
-        sample = Sample.objects.latest('id')  # Get the latest saved sample
-        analysis_results = process_image(sample.sample_image)  # Replace with your image processing logic
+        analysis_results = process_image(cloudinary_url)  # Replace with your image processing logic
 
         # Save the analysis results to the sample
         sample.analysis_results = analysis_results

@@ -10,6 +10,11 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.2/ref/settings/
 """
 
+import cloudinary.api
+import cloudinary.uploader
+import cloudinary
+from corsheaders.defaults import default_headers
+import dj_database_url
 from pathlib import Path
 import os
 
@@ -46,7 +51,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    
+
     # Apps
     'analyser',
     'newsletter',
@@ -91,11 +96,10 @@ WSGI_APPLICATION = 'backend.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
-import dj_database_url
 
 DATABASES = {
-'default': dj_database_url.config(default=('postgresql://postgres:VIcrcYBn1aMZydZdX5pm@containers-us-west-164.railway.app:6701/railway'))
-    }
+    'default': dj_database_url.config(default=('postgresql://postgres:VIcrcYBn1aMZydZdX5pm@containers-us-west-164.railway.app:6701/railway'))
+}
 
 # Password validation
 # https://docs.djangoproject.com/en/4.2/ref/settings/#auth-password-validators
@@ -134,7 +138,7 @@ USE_TZ = True
 STATIC_URL = 'staticfiles_build/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles_build', 'static')
 STATICFILES_DIRS = [
-os.path.join(BASE_DIR, 'static'),
+    os.path.join(BASE_DIR, 'static'),
 ]
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
@@ -148,7 +152,7 @@ JAZZMIN_SETTINGS = {
 }
 
 # Media
-MEDIA_ROOT = os.path.join(BASE_DIR, 'media/') # 'data' is my media folder
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media/')  # 'data' is my media folder
 MEDIA_URL = '/media/'
 
 # Communication
@@ -178,24 +182,25 @@ CORS_ALLOW_HEADERS = (
     "x-requested-with",
 )
 
-from corsheaders.defaults import default_headers
 
 CORS_ALLOW_HEADERS = default_headers + (
     'Access-Control-Allow-Origin',
 )
 
+CORS_ALLOW_APPS = [
+    'analyser',
+    'newsletter',
+]
+
 
 # Object Delivery
-import cloudinary
-import cloudinary.uploader
-import cloudinary.api
 
 
-# Config Cloudinary         
-cloudinary.config( 
-  cloud_name = "dxlzb8s4y", 
-  api_key = "294815647831565", 
-  api_secret = "qID8z6MUQNuUinZ39t-lqW_P1QM" 
+# Config Cloudinary
+cloudinary.config(
+    cloud_name="dxlzb8s4y",
+    api_key="294815647831565",
+    api_secret="qID8z6MUQNuUinZ39t-lqW_P1QM"
 )
 
 DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'

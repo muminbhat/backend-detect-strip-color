@@ -29,15 +29,21 @@ def sample_list(request):
 @parser_classes((MultiPartParser, FormParser))
 def create_sample(request):
     serializer = SampleSerializer(data=request.data)
-    
 
     if serializer.is_valid():
-        uploaded_image = cloudinary.uploader.upload(request.FILES['sample_image'])
-        cloudinary_url = uploaded_image['url']
-        sample = serializer.save(sample_image=cloudinary_url)
+        # Save the sample data to the database
+        serializer.save()
+
+        # Perform image analysis on the saved sample
+        sample = Sample.objects.latest('id')  # Get the latest saved sample
+        analysis_results = process_image(sample.sample_image)  # Replace with your image processing logic
+
+        # Save the analysis results to the sample
+        sample.analysis_results = analysis_results
         sample.save()
+
         return Response(serializer.data, status=status.HTTP_201_CREATED)
-    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST,)
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 @api_view(['GET', 'POST'])
 def sample_detail(request, sample_id):

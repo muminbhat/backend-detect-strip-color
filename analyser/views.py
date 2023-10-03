@@ -39,45 +39,29 @@ def create_sample(request):
         return Response(serializer.data, status=status.HTTP_201_CREATED)
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST,)
 
-@api_view(['GET', 'POST'])
-def sample_detail(request, sample_id):
-    try:
-        sample = Sample.objects.get(pk=sample_id)
-    except Sample.DoesNotExist:
-        return Response({'message': 'Sample not found'}, status=status.HTTP_404_NOT_FOUND)
+# Create Sample and process
+# @api_view(['POST'])
+# @parser_classes((MultiPartParser, FormParser))
+# def create_sample(request):
+#     serializer = SampleSerializer(data=request.data)
 
-    if request.method == 'GET':
-        serializer = SampleSerializer(sample)
-        return Response(serializer.data)
+#     if serializer.is_valid():
+#         # Upload the image to Cloudinary
+#         uploaded_image = cloudinary.uploader.upload(request.FILES['sample_image'])
+#         cloudinary_url = uploaded_image['url']
 
-    elif request.method == 'POST':
-        try:
-            # Process the uploaded image
-            analyzed_colors = process_image(sample.sample_image)
+#         # Save the sample data to the database with the Cloudinary URL
+#         sample = serializer.save(sample_image=cloudinary_url)
 
-            # Ensure that the response contains exactly 10 colors
-            if len(analyzed_colors) != 10:
-                return Response({'error': 'Image does not contain 10 distinct colors'}, status=status.HTTP_400_BAD_REQUEST)
+#         # Perform image analysis on the saved sample
+#         analysis_results = process_image(cloudinary_url)  # Replace with your image processing logic
 
-            # Store the Cloudinary image URL in the sample
-            sample.sample_image = cloudinary_resource.url
+#         # Save the analysis results to the sample
+#         sample.analysis_results = analysis_results
+#         sample.save()
 
-            # Save the sample
-            sample.save()
-
-            # Update the analysis results
-            sample.analysis_results = analyzed_colors
-            sample.save()
-
-            serializer = SampleSerializer(sample)
-            return Response(serializer.data)
-
-        except SuspiciousFileOperation:
-            return Response({'error': 'Invalid file operation'}, status=status.HTTP_400_BAD_REQUEST)
-        except Exception as e:
-            return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
-
-import requests  # Make sure you import the requests library at the beginning of your Python file
+#         return Response(serializer.data, status=status.HTTP_201_CREATED)
+#     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 # Image Process
 def process_image(image_url):
